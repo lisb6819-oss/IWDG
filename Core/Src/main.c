@@ -24,7 +24,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "key.h"
+#include "led.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -92,15 +93,20 @@ int main(void)
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
   printf("您还没喂狗，请及时喂狗！！！\r\n");
+  LED1(0); // Turn off LED1
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    HAL_Delay(1000);
-    HAL_IWDG_Refresh(&hiwdg);
-    printf("喂狗成功！！！\r\n");
+    if(key_scan(1)==KEY0_PRES) // If Key 0 is pressed
+    {
+      LED1(1); // Turn on LED1
+      HAL_IWDG_Refresh(&hiwdg); 
+      printf("喂狗成功！！！\r\n");
+    }
+    HAL_Delay(20); // Delay for 20 milliseconds
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

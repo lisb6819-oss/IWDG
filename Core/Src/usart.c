@@ -20,12 +20,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "usart.h"
 
-/* USER CODE BEGIN Includes */
-#include <stdio.h>
-/* USER CODE END Includes */
-
 /* USER CODE BEGIN 0 */
-
+#include <stdio.h>
 /* printf -> syscalls.c: _write -> USART1 */
 int __io_putchar(int ch)
 {
@@ -172,3 +168,4 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
       HAL_UART_Receive_IT(&huart1, rx_buffer, RXBUFFERSIZE); //开启下次接收中断
   }
 /* USER CODE END 1 */
+
