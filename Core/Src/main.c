@@ -91,13 +91,16 @@ int main(void)
   MX_IWDG_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-
+  printf("您还没喂狗，请及时喂狗！！！\r\n");
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    HAL_Delay(1000);
+    HAL_IWDG_Refresh(&hiwdg);
+    printf("喂狗成功！！！\r\n");
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
