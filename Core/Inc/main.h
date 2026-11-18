@@ -61,6 +61,7 @@ void Error_Handler(void);
 #define LED1_GPIO_Port GPIOC
 #define WK_UP_Pin GPIO_PIN_0
 #define WK_UP_GPIO_Port GPIOA
+#define WK_UP_EXTI_IRQn EXTI0_IRQn
 #define KEY0_Pin GPIO_PIN_1
 #define KEY0_GPIO_Port GPIOB
 #define USART1_TX_Pin GPIO_PIN_9

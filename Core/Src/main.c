@@ -46,7 +46,9 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+uint8_t key; // Variable to store the key value
 
+uint8_t t; // Variable to store time or count
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -89,24 +91,69 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_IWDG_Init();
+  // MX_IWDG_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-  printf("您还没喂狗，请及时喂狗！！！\r\n");
-  LED1(0); // Turn off LED1
+  // printf("您还没喂狗，请及时喂狗！！！\r\n");
+
+
+  printf("Enter to Lowper Test\r\n"); 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    if(key_scan(1)==KEY0_PRES) // If Key 0 is pressed
-    {
-      LED1(1); // Turn on LED1
-      HAL_IWDG_Refresh(&hiwdg); 
-      printf("喂狗成功！！！\r\n");
+    key = key_scan(0); // Scan for key presses
+
+    if(key){
+      switch (key) {
+      
+        case KEY2_PRES: // If Key 2 is pressed
+          __HAL_RCC_PWR_CLK_ENABLE(); // Enable power control clock
+          HAL_PWR_EnableWakeUpPin(PWR_WAKEUP_PIN1); // Enable wake-up pin 1
+          __HAL_PWR_CLEAR_FLAG(PWR_FLAG_WU); // Clear wake-up flag
+          printf("Enter to STANDBY Mode\r\n");
+          HAL_PWR_EnterSTANDBYMode(); // Enter standby mode
+          break;
+        case KEY1_PRES: // If Key 1 is pressed
+          LED1(1); // Turn on LED1
+            printf("Enter to STOP Mode\r\n");
+
+            HAL_SuspendTick();
+            HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_STOPENTRY_WFI);
+
+            HAL_ResumeTick();
+            SystemClock_Config();  // 恢复系统时钟，保留你原来的操作
+
+            printf("Exit STOP Mode\r\n");
+          LED1(0); // Turn off LED1
+          break;
+        case KEY0_PRES: // If Key 0 is pressed
+          printf("Enter to SLEEP Mode\r\n");  
+          HAL_SuspendTick();  // 暂停 SysTick 中断
+          HAL_PWR_EnterSLEEPMode(PWR_MAINREGULATOR_ON, PWR_SLEEPENTRY_WFI);
+          HAL_ResumeTick();         
+          printf("Exit SLEEP Mode\r\n");
+          break;
+      }
     }
-    HAL_Delay(20); // Delay for 20 milliseconds
+    if((t%20)==0) // Every 20 iterations
+    {
+      LED0_TOGGLE(); // Toggle LED0
+    }
+    HAL_Delay(10); // Delay for 10 milliseconds
+    t++;
+
+
+
+    // if(key_scan(1)==KEY0_PRES) // If Key 0 is pressed
+    // {
+    //   LED1(1); // Turn on LED1
+    //   HAL_IWDG_Refresh(&hiwdg); 
+    //   printf("喂狗成功！！！\r\n");
+    // }
+    // HAL_Delay(20); // Delay for 20 milliseconds
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
