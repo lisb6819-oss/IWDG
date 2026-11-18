@@ -18,7 +18,6 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "iwdg.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -91,11 +90,19 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  // MX_IWDG_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-  // printf("您还没喂狗，请及时喂狗！！！\r\n");
 
+__HAL_RCC_PWR_CLK_ENABLE();
+
+PWR_PVDTypeDef pvd = {0};
+
+pvd.PVDLevel = PWR_PVDLEVEL_7;             // 标称阈值约 2.9 V
+pvd.Mode = PWR_PVD_MODE_IT_RISING_FALLING; // 电压降低、恢复都触发中断
+
+HAL_PWR_ConfigPVD(&pvd);
+__HAL_PWR_PVD_EXTI_CLEAR_FLAG();
+HAL_PWR_EnablePVD();
 
   printf("Enter to Lowper Test\r\n"); 
   /* USER CODE END 2 */
@@ -173,11 +180,10 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSI|RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.LSIState = RCC_LSI_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
   RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL9;
@@ -202,7 +208,19 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void HAL_PWR_PVDCallback(void)
+{
+  if(__HAL_PWR_GET_FLAG(PWR_FLAG_PVDO)) // If the PVD output is low (voltage below threshold)
+  {
+    printf("PVD Low Voltage \r\n");
+    LED1(1); // Turn on LED1 to indicate low voltage
+  }
+  else // If the PVD output is high (voltage above threshold)
+  {
+    printf("PVD Voltage OK\r\n");
+    LED1(0); // Turn off LED1 to indicate voltage is OK
+  }
+}
 /* USER CODE END 4 */
 
 /**
